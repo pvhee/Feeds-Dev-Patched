@@ -1,0 +1,55 @@
+Index: mappers/date.inc
+===================================================================
+RCS file: /cvs/drupal-contrib/contributions/modules/feeds/mappers/date.inc,v
+retrieving revision 1.1
+diff -u -p -r1.1 date.inc
+--- mappers/date.inc	15 Jan 2010 19:44:54 -0000	1.1
++++ mappers/date.inc	11 Mar 2010 08:42:18 -0000
+@@ -49,16 +49,34 @@ function date_feeds_node_processor_targe
+  */
+ function date_feeds_set_target($node, $target, $feed_element) {
+   list($field_name, $sub_field) = split(':', $target);
+-  if (!($feed_element instanceof FeedsDateTimeElement)) {
+-    if (is_array($feed_element)) {
+-      $feed_element = $feed_element[0];
+-    }
+-    if ($sub_field == 'end') {
+-      $feed_element = new FeedsDateTimeElement(NULL, $feed_element);
+-    }
+-    else {
+-      $feed_element = new FeedsDateTimeElement($feed_element, NULL);
+-    }
+-  }
+-  $feed_element->buildDateField($node, $field_name);
++  
++   // Normalize $value, create an array of FeedsEnclosures of it.
++   if (!is_array($value)) {
++     $value = array($value);
++   }
++   foreach ($value as $k => $v) {
++     if (!($v instanceof FeedsDateTimeElement)) {
++       if ($sub_field == 'end') {
++         $v = new FeedsDateTimeElement(NULL, $v);
++       }
++       else {
++         $v = new FeedsDateTimeElement($v, NULL);
++       }
++     }
++     $v->buildDateField($node, $field_name);
++   }
++  
++  
++  // if (!($feed_element instanceof FeedsDateTimeElement)) {
++  //   if (is_array($feed_element)) {
++  //     $feed_element = $feed_element[0];
++  //   }
++  //   if ($sub_field == 'end') {
++  //     $feed_element = new FeedsDateTimeElement(NULL, $feed_element);
++  //   }
++  //   else {
++  //     $feed_element = new FeedsDateTimeElement($feed_element, NULL);
++  //   }
++  // }
++  // $feed_element->buildDateField($node, $field_name);
+ }
+\ No newline at end of file

@@ -1,0 +1,32 @@
+Index: plugins/FeedsNodeProcessor.inc
+===================================================================
+RCS file: /cvs/drupal-contrib/contributions/modules/feeds/plugins/FeedsNodeProcessor.inc,v
+retrieving revision 1.24
+diff -u -p -r1.24 FeedsNodeProcessor.inc
+--- plugins/FeedsNodeProcessor.inc	23 Feb 2010 22:24:50 -0000	1.24
++++ plugins/FeedsNodeProcessor.inc	10 Mar 2010 11:48:08 -0000
+@@ -213,6 +213,13 @@ class FeedsNodeProcessor extends FeedsPr
+     elseif (in_array($target_element, array('title', 'status', 'created'))) {
+       $target_node->$target_element = $value;
+     }
++    elseif ($target_element == 'type') {
++      if (in_array($value, array_keys(node_get_types('names')))) {
++        $target_node->type = $value;
++        // we need to prepare the node again now its type has changed
++        node_object_prepare($target_node);
++      }
++    }
+   }
+ 
+   /**
+@@ -237,6 +244,10 @@ class FeedsNodeProcessor extends FeedsPr
+       );
+     }
+     $targets += array(
++      'type' => array(
++        'name' => t('Content type'),
++        'description' => t('The content type of this node. If used, overrides the "content type" settings of this processor.'),
++      ),
+       'status' => array(
+         'name' => t('Published status'),
+         'description' => t('Whether a node is published or not. 1 stands for published, 0 for not published.'),

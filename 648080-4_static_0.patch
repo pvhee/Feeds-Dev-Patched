@@ -1,0 +1,23 @@
+Index: plugins/FeedsProcessor.inc
+===================================================================
+RCS file: /cvs/drupal-contrib/contributions/modules/feeds/plugins/FeedsProcessor.inc,v
+retrieving revision 1.8
+diff -u -p -r1.8 FeedsProcessor.inc
+--- plugins/FeedsProcessor.inc	24 Feb 2010 01:19:33 -0000	1.8
++++ plugins/FeedsProcessor.inc	13 Mar 2010 12:58:23 -0000
+@@ -81,12 +81,9 @@ abstract class FeedsProcessor extends Fe
+    * @see hook_feeds_data_processor_targets_alter()
+    */
+   protected function map($source_item, $target_item = NULL) {
+-
+-    // Static cache $targets as getMappingTargets() may be an expensive method.
+-    static $targets;
+-    if (empty($targets)) {
+-      $targets = $this->getMappingTargets();
+-    }
++    // Removed static caching, so different feed configs can retrieve their mapping targets
++    $targets = $this->getMappingTargets();
++    
+     $parser = feeds_importer($this->id)->parser;
+     if (empty($target_item)) {
+       $target_item = array();

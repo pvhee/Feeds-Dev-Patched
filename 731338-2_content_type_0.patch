@@ -1,0 +1,34 @@
+? .git
+? .gitignore
+? 731338-2_content_type.patch
+? libraries/simplepie.inc
+Index: plugins/FeedsNodeProcessor.inc
+===================================================================
+RCS file: /cvs/drupal-contrib/contributions/modules/feeds/plugins/FeedsNodeProcessor.inc,v
+retrieving revision 1.24
+diff -u -p -r1.24 FeedsNodeProcessor.inc
+--- plugins/FeedsNodeProcessor.inc	23 Feb 2010 22:24:50 -0000	1.24
++++ plugins/FeedsNodeProcessor.inc	3 Mar 2010 14:03:44 -0000
+@@ -213,6 +213,11 @@ class FeedsNodeProcessor extends FeedsPr
+     elseif (in_array($target_element, array('title', 'status', 'created'))) {
+       $target_node->$target_element = $value;
+     }
++    elseif ($target_element == 'type') {
++      if (in_array($value, array_keys(node_get_types('names')))) {
++        $target_node->type = $value;
++      }
++    }
+   }
+ 
+   /**
+@@ -237,6 +242,10 @@ class FeedsNodeProcessor extends FeedsPr
+       );
+     }
+     $targets += array(
++      'type' => array(
++        'name' => t('Content type'),
++        'description' => t('The content type of this node. If used, overrides the "content type" settings of this processor.'),
++      ),
+       'status' => array(
+         'name' => t('Published status'),
+         'description' => t('Whether a node is published or not. 1 stands for published, 0 for not published.'),
