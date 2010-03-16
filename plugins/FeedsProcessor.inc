@@ -81,9 +81,12 @@ abstract class FeedsProcessor extends FeedsPlugin {
    * @see hook_feeds_data_processor_targets_alter()
    */
   protected function map($source_item, $target_item = NULL) {
-    // Removed static caching, so different feed configs can retrieve their mapping targets
-    $targets = $this->getMappingTargets();
-    
+
+    // Static cache $targets as getMappingTargets() may be an expensive method.
+    static $targets;
+    if (empty($targets) || !isset($targets[$this->id])) {
+      $targets[$this->id] = $this->getMappingTargets();
+    }
     $parser = feeds_importer($this->id)->parser;
     if (empty($target_item)) {
       $target_item = array();
@@ -101,8 +104,8 @@ abstract class FeedsProcessor extends FeedsPlugin {
     foreach ($this->config['mappings'] as $mapping) {
       $value = $parser->getSourceElement($source_item, $mapping['source']);
 
-      if (is_array($targets[$mapping['target']]) && isset($targets[$mapping['target']]['callback']) && function_exists($targets[$mapping['target']]['callback'])) {
-        $callback = $targets[$mapping['target']]['callback'];
+      if (is_array($targets[$this->id][$mapping['target']]) && isset($targets[$this->id][$mapping['target']]['callback']) && function_exists($targets[$this->id][$mapping['target']]['callback'])) {
+        $callback = $targets[$this->id][$mapping['target']]['callback'];
         $callback($target_item, $mapping['target'], $value);
       }
       else {
